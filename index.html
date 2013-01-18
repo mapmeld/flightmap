@@ -84,7 +84,7 @@ function ready(error, world, names) {
 
   var centerAt = function(latlng){
     return d3.transition()
-      .duration(1250)
+      .duration(1450)
       .tween("rotate", function() {
         var p = [ latlng[1], latlng[0] ],
             r = d3.interpolate(projection.rotate(), [-p[0], -p[1]]);
@@ -129,11 +129,11 @@ function ready(error, world, names) {
           }, 2000);
         }, 800);
       }, 2000);
-    }, 1250);
+    }, 1050);
   }, 1250);
 }
     </script>
-    <h3 id="sidebar" style="position:fixed;left:25px;top:25px;">Plane Flight</h3>
+    <h3 id="sidebar" style="position:fixed;left:20px;top:20px;">Plane Flight</h3>
     <canvas width="960" height="500"></canvas>
     <h4 id="time" style="position:fixed;right:25px;top:25px;">4:10PM Thursday Pacific</h4>
   </body>
