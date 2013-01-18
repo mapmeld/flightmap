@@ -95,7 +95,7 @@ function ready(error, world, names) {
               ctx.strokeStyle = "#fff", ctx.lineWidth = .5, ctx.beginPath(), path(borders), ctx.stroke();
               ctx.strokeStyle = "#000", ctx.lineWidth = 2, ctx.beginPath(), path(globe), ctx.stroke();
               if(planeOn){
-                ctx.fillStyle = "#f00", ctx.beginPath(), ctx.rect( Math.round(width / 2), Math.round(height / 2), 10, 10 ), ctx.fill();
+                ctx.fillStyle = "#f00", ctx.beginPath(), ctx.rect( Math.round(width / 2) - 4, Math.round(height / 2) - 4, 8, 8 ), ctx.fill();
               }
         };
       });
