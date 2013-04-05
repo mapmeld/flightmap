@@ -18,7 +18,7 @@ Turn the plane graphic on (currently just a red box)
 
 ## International Date Line
 
-The example at http://mapmeld.github.com/flightmap crosses the International Date Line. If you are traveling west from Honolulu to Japan, you should give Honolulu's longitude as usual:
+The example at http://mapmeld.github.io/flightmap crosses the International Date Line. If you are traveling west from Honolulu to Japan, you should give Honolulu's longitude as usual:
 
     centerAt([21.683414, -158.031954]);
 
