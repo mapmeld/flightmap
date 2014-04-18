@@ -75,11 +75,6 @@ function ready(error, world) {
               ctx.fillStyle = "#f00", ctx.beginPath(), path(countries[c]), ctx.fill();
               ctx.strokeStyle = "#fff", ctx.lineWidth = .5, ctx.beginPath(), path(borders), ctx.stroke();
               ctx.strokeStyle = "#000", ctx.lineWidth = 2, ctx.beginPath(), path(globe), ctx.stroke();
-
-              if(airpaths.features.length){
-                ctx.strokeStyle = "#00f", ctx.lineWidth = 2, ctx.beginPath(), path(airpaths), ctx.stroke();
-              }
-
             };
           });
       }
@@ -163,13 +158,13 @@ function ready(error, world) {
           selectCountry("Nepal");
         }, 1500);
 
-      }, 700);
-    }, 1500);
+      }, 1000);
+    }, 2200);
   }, 2000);
 }
     </script>
     <h3 id="sidebar" style="position:fixed;left:20px;top:20px;">Plane Flight</h3>
-    <h4 id="time" style="position:fixed;left:20px;">8:05PM Friday Majuro</h4>
+    <h4 id="time" style="position:fixed;left:20px;">Chicago</h4>
     <canvas width="960" height="500"></canvas>
   </body>
 </html>
