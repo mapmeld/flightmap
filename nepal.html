@@ -100,7 +100,7 @@ function ready(error, world) {
 
   var centerAt = function(latlng){
     return d3.transition()
-      .duration(1450)
+      .duration(1700)
       .tween("rotate", function() {
         var p = [ latlng[1], latlng[0] ],
             r = d3.interpolate(projection.rotate(), [-p[0], -p[1]]);
@@ -159,7 +159,7 @@ function ready(error, world) {
         }, 1500);
 
       }, 1000);
-    }, 2200);
+    }, 1800);
   }, 2000);
 }
     </script>
