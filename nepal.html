@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+  <!-- based on World Tour from http://bl.ocks.org/d/4183330/ -->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta charset="utf-8"/>
+    <style type="text/css">
+html, body{
+  font-family: arial, sans-serif;
+}
+    </style>
+  </head>
+  <body>
+    <script src="d3.v3.min.js" type="text/javascript"></script>
+    <script src="queue.v1.min.js" type="text/javascript"></script>
+    <script src="topojson.v0.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+var width = 960,
+    height = 500;
+
+var planeOn = false;
+
+var projection = d3.geo.orthographic()
+    .scale(288)
+    .clipAngle(87);
+
+var canvas = d3.select("body").append("canvas")
+    .attr("width", width)
+    .attr("height", height);
+
+var ctx = canvas.node().getContext("2d");
+
+var path = d3.geo.path()
+    .projection(projection)
+    .context(ctx);
+
+var title = d3.select("h1");
+
+var airpaths = {
+  type: "FeatureCollection",
+  features: [ ]
+};
+
+queue()
+    .defer(d3.json, "world-110m.json")
+    .await(ready);
+
+function ready(error, world) {
+//function ready(error, world) {
+  var globe = {type: "Sphere"},
+      land = topojson.object(world, world.objects.land),
+      countries = topojson.object(world, world.objects.countries).geometries,
+      borders = topojson.mesh(world, world.objects.countries, function(a, b) { return a.id !== b.id; }),
+      i = -1,
+      n = countries.length;
+      
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = "#bbb", ctx.beginPath(), path(land), ctx.fill();
+  ctx.strokeStyle = "#fff", ctx.lineWidth = .5, ctx.beginPath(), path(borders), ctx.stroke();
+  ctx.strokeStyle = "#000", ctx.lineWidth = 2, ctx.beginPath(), path(globe), ctx.stroke();
+    
+  var selectCountry = function(name){
+    for(var c=0;c<countries.length;c++){
+      if(countries[c].name == name){
+        return d3.transition()
+          .duration(1250)
+          .tween("rotate", function() {
+            var p = d3.geo.centroid(countries[c]),
+                r = d3.interpolate(projection.rotate(), [-p[0], -p[1]]);
+            console.log(p);
+            return function(t) {
+              projection.rotate(r(t));
+              ctx.clearRect(0, 0, width, height);
+              ctx.fillStyle = "#bbb", ctx.beginPath(), path(land), ctx.fill();
+              ctx.fillStyle = "#f00", ctx.beginPath(), path(countries[c]), ctx.fill();
+              ctx.strokeStyle = "#fff", ctx.lineWidth = .5, ctx.beginPath(), path(borders), ctx.stroke();
+              ctx.strokeStyle = "#000", ctx.lineWidth = 2, ctx.beginPath(), path(globe), ctx.stroke();
+
+              if(airpaths.features.length){
+                ctx.strokeStyle = "#00f", ctx.lineWidth = 2, ctx.beginPath(), path(airpaths), ctx.stroke();
+              }
+
+            };
+          });
+      }
+    }
+    // if country was not included, return null
+    return null;
+  };
+
+  var addLine = function(latlngs) {
+    latlngs.reverse();
+    for(var r=0;r<latlngs.length;r++){
+      latlngs[r].reverse();
+    }
+    airpaths.features.push({
+      type: "Feature",
+      properties: {},
+      geometry: {
+        type: "LineString",
+        coordinates: latlngs
+      }
+    });
+  };
+
+  var centerAt = function(latlng){
+    return d3.transition()
+      .duration(1450)
+      .tween("rotate", function() {
+        var p = [ latlng[1], latlng[0] ],
+            r = d3.interpolate(projection.rotate(), [-p[0], -p[1]]);
+        return function(t) {
+          var coords = r(t);
+          if(planeOn){
+            airpaths.features.push({
+              type: "Feature",
+              properties: {},
+              geometry: {
+                type: "Point",
+                coordinates: [ -1 * coords[0], -1 * coords[1] ]
+              }
+            });
+          }
+          projection.rotate(coords);
+              ctx.clearRect(0, 0, width, height);
+              ctx.fillStyle = "#bbb", ctx.beginPath(), path(land), ctx.fill();
+              ctx.strokeStyle = "#fff", ctx.lineWidth = .5, ctx.beginPath(), path(borders), ctx.stroke();
+              ctx.strokeStyle = "#000", ctx.lineWidth = 2, ctx.beginPath(), path(globe), ctx.stroke();
+
+              if(airpaths.features.length){
+                ctx.strokeStyle = "#00f", ctx.lineWidth = 3, ctx.beginPath(), path(airpaths), ctx.stroke();
+              }
+
+              if(planeOn){
+                ctx.fillStyle = "#f00", ctx.beginPath(), ctx.rect( Math.round(width / 2) - 4, Math.round(height / 2) - 4, 8, 8 ), ctx.fill();
+              }
+        };
+      });
+  };
+  
+  // start flight animation
+  
+  // start in Chicago
+  selectCountry("United States");
+  centerAt([41.9722286,-87.8998488]);
+  document.getElementById("time").innerHTML = "Fri 8:45pm: Depart Chicago";
+  setTimeout(function(){
+
+    planeOn = true;
+    centerAt([24.4478208,54.5841053]);
+    
+    setTimeout(function(){
+      document.getElementById("time").innerHTML = "Sat 7:20pm: Arrive Abu Dhabi<br/>19 hour layover";
+      
+      selectCountry("United Arab Emirates");  
+
+      setTimeout(function(){
+        document.getElementById("time").innerHTML = "Sun 1:55pm: Depart Abu Dhabi";
+        centerAt([ 27.6965737,85.3467322 ]);
+        
+        setTimeout(function(){
+          document.getElementById("time").innerHTML = "Sun 8:05pm: Arrive Kathmandu";
+          selectCountry("Nepal");
+        }, 1500);
+
+      }, 700);
+    }, 1500);
+  }, 2000);
+}
+    </script>
+    <h3 id="sidebar" style="position:fixed;left:20px;top:20px;">Plane Flight</h3>
+    <h4 id="time" style="position:fixed;left:20px;">8:05PM Friday Majuro</h4>
+    <canvas width="960" height="500"></canvas>
+  </body>
+</html>
